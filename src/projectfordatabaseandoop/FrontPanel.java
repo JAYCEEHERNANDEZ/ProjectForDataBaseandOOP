@@ -522,7 +522,7 @@ public class FrontPanel extends javax.swing.JFrame {
             // Clear the cart
             model.setRowCount(0);
             totalAmount = 0;
-            TotalLabel.setText("TOTAL: ₱0.00");
+            TotalLabel.setText("TOTAL: ");
 
             JOptionPane.showMessageDialog(this, "Checkout successful! Thank you for your purchase.");
         } catch (SQLException e) {
