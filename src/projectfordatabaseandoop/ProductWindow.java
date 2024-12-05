@@ -263,8 +263,11 @@ public class ProductWindow extends javax.swing.JFrame {
 
     private void restockProduct() {
         String productId = JOptionPane.showInputDialog("Enter product ID to restock:");
+     if (productId == null) {
+            return;
+        }
         String quantityStr = JOptionPane.showInputDialog("Enter quantity to add:");
-        if (productId == null) {
+        if (quantityStr == null) {
             return;
         }
 
@@ -291,8 +294,11 @@ public class ProductWindow extends javax.swing.JFrame {
 
     private void modifyPrice() {
         String productId = JOptionPane.showInputDialog("Enter product ID to modify price:");
+     if (productId == null) {
+            return;
+        }
         String newPriceStr = JOptionPane.showInputDialog("Enter new price:");
-            if (productId == null) {
+            if (newPriceStr == null) {
             return;
         }
         try {
@@ -318,6 +324,9 @@ public class ProductWindow extends javax.swing.JFrame {
 
     private void deleteProduct() {
         String productId = JOptionPane.showInputDialog("Enter product ID to delete:");
+        if (productId == null) {
+            return;
+        }
         try {
             int id = Integer.parseInt(productId);
             boolean success = productDAO.deleteProduct(id);
