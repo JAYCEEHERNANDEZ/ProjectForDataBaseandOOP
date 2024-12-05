@@ -184,31 +184,49 @@ public class MonitorNetProfitWindow extends javax.swing.JFrame {
         double totalSales = 0.0;
         double expenses = 0.0;
         double netProfit = 0.0;
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            String query = "SELECT SUM(total_sales) AS total_sales, SUM(expenses) AS expenses, " +
-                           "SUM(total_sales - expenses) AS net_profit " +
-                           "FROM daily_sales_summary WHERE sale_date = CURDATE()";
-
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                totalSales = rs.getDouble("total_sales");
-                expenses = rs.getDouble("expenses");
-                netProfit = rs.getDouble("net_profit");
-
-                JOptionPane.showMessageDialog(this,
-                        "Daily Summary:\n" +
-                                "Date: " + java.time.LocalDate.now() + "\n" +
-                                "Total Sales: ₱ " + String.format("%.2f", totalSales) + "\n" +
-                                "Expenses: ₱ " + String.format("%.2f", expenses) + "\n" +
-                                "Net Profit: ₱ " + String.format("%.2f", netProfit));
-            } else {
-                JOptionPane.showMessageDialog(this, "No data available for today.");
+        try {
+            // Prompt the user for the date
+            String inputDay = JOptionPane.showInputDialog(this, "Enter the day (e.g., 1-31):");
+            if (inputDay == null) {
+            return;
+        }
+            String inputMonth = JOptionPane.showInputDialog(this, "Enter the month (e.g., 1-12):");
+            if (inputMonth == null) {
+            return;
+        }
+            String inputYear = JOptionPane.showInputDialog(this, "Enter the year (e.g., 2024):");
+            if (inputYear == null) {
+            return;
+        }
+            String saleDate = inputYear + "-" + inputMonth + "-" + inputDay;
+            try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+                String query = "SELECT SUM(total_sales) AS total_sales, SUM(expenses) AS expenses, " +
+                               "SUM(total_sales - expenses) AS net_profit " +
+                               "FROM daily_sales_summary WHERE sale_date = ?";
+    
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setString(1, saleDate);
+                ResultSet rs = stmt.executeQuery();
+    
+                if (rs.next()) {
+                    totalSales = rs.getDouble("total_sales");
+                    expenses = rs.getDouble("expenses");
+                    netProfit = rs.getDouble("net_profit");
+    
+                    JOptionPane.showMessageDialog(this,
+                            "Daily Summary:\n" +
+                                    "Date: " + saleDate + "\n" +
+                                    "Total Sales: ₱ " + String.format("%.2f", totalSales) + "\n" +
+                                    "Expenses: ₱ " + String.format("%.2f", expenses) + "\n" +
+                                    "Net Profit: ₱ " + String.format("%.2f", netProfit));
+                } else {
+                    JOptionPane.showMessageDialog(this, "No data available for " + saleDate + ".");
+                }
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error retrieving daily summary: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Unexpected error: " + e.getMessage());
     }
 }
 
