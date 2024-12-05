@@ -185,17 +185,16 @@ public class MonitorNetProfitWindow extends javax.swing.JFrame {
         double expenses = 0.0;
         double netProfit = 0.0;
         try {
-            // Prompt the user for the date
-            String inputDay = JOptionPane.showInputDialog(this, "Enter the day (e.g., 1-31):");
-            if (inputDay == null) {
+            String inputYear = JOptionPane.showInputDialog(this, "Enter the year (e.g., 2024):");
+            if (inputYear == null) {
             return;
         }
-            String inputMonth = JOptionPane.showInputDialog(this, "Enter the month (e.g., 1-12):");
+             String inputMonth = JOptionPane.showInputDialog(this, "Enter the month (e.g., 1-12):");
             if (inputMonth == null) {
             return;
         }
-            String inputYear = JOptionPane.showInputDialog(this, "Enter the year (e.g., 2024):");
-            if (inputYear == null) {
+            String inputDay = JOptionPane.showInputDialog(this, "Enter the day (e.g., 1-31):");
+            if (inputDay == null) {
             return;
         }
             String saleDate = inputYear + "-" + inputMonth + "-" + inputDay;
@@ -203,16 +202,16 @@ public class MonitorNetProfitWindow extends javax.swing.JFrame {
                 String query = "SELECT SUM(total_sales) AS total_sales, SUM(expenses) AS expenses, " +
                                "SUM(total_sales - expenses) AS net_profit " +
                                "FROM daily_sales_summary WHERE sale_date = ?";
-    
+
                 PreparedStatement stmt = conn.prepareStatement(query);
                 stmt.setString(1, saleDate);
                 ResultSet rs = stmt.executeQuery();
-    
+
                 if (rs.next()) {
                     totalSales = rs.getDouble("total_sales");
                     expenses = rs.getDouble("expenses");
                     netProfit = rs.getDouble("net_profit");
-    
+
                     JOptionPane.showMessageDialog(this,
                             "Daily Summary:\n" +
                                     "Date: " + saleDate + "\n" +
