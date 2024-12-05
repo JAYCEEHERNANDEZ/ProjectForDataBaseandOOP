@@ -199,6 +199,9 @@ public class ViewExpenses extends javax.swing.JFrame {
     
     private void AddExpenses() {
         String amountInput = JOptionPane.showInputDialog(this, "Enter Expense Amount:");
+        if (amountInput == null) {
+            return;
+        }
         double expenseAmount = 0;
         try {
             expenseAmount = Double.parseDouble(amountInput);
