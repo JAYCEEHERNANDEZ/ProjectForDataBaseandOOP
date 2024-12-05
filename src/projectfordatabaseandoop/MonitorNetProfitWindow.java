@@ -184,6 +184,7 @@ public class MonitorNetProfitWindow extends javax.swing.JFrame {
         double totalSales = 0.0;
         double expenses = 0.0;
         double netProfit = 0.0;
+
         try {
             String inputYear = JOptionPane.showInputDialog(this, "Enter the year (e.g., 2024):");
             if (inputYear == null) {
@@ -242,12 +243,6 @@ private void displayMonthlyNetProfit() {
     if (inputMonth == null) {
         return;
     }
-
-    if (inputYear == null || inputYear.trim().isEmpty() || inputMonth == null || inputMonth.trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Year and month are required. Operation canceled.");
-        return;
-    }
-
     try {
         int year = Integer.parseInt(inputYear.trim());
         int month = Integer.parseInt(inputMonth.trim());
@@ -255,12 +250,10 @@ private void displayMonthlyNetProfit() {
         if (month < 1 || month > 12) {
             throw new NumberFormatException();
         }
-
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             String query = "SELECT SUM(total_sales) AS total_sales, SUM(expenses) AS expenses, " +
                            "SUM(total_sales - expenses) AS net_profit " +
                            "FROM daily_sales_summary WHERE YEAR(sale_date) = ? AND MONTH(sale_date) = ?";
-
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, year);
             stmt.setInt(2, month);
@@ -297,12 +290,6 @@ private void displayMonthlyNetProfit() {
         if (inputYear == null) {
         return;
     }
-
-        if (inputYear == null || inputYear.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Year is required. Operation canceled.");
-            return;
-        }
-
         try {
             int year = Integer.parseInt(inputYear.trim());
 
