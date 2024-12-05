@@ -32,19 +32,59 @@ public class ProductDAO {
     }
 
     public boolean addProduct(Product product) {
-            String query = "INSERT INTO inventory (Product_Name, Price, Stock) VALUES (?, ?, ?)";
-            try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-                 PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, product.getProductName());
-                stmt.setDouble(2, product.getPrice());
-                stmt.setInt(3, product.getStock());
-                int rowsInserted = stmt.executeUpdate();
-                return rowsInserted > 0;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
+        String checkQuery = "SELECT Stock FROM inventory WHERE TRIM(LOWER(Product_Name)) = TRIM(LOWER(?))";
+        String updateQuery = "UPDATE inventory SET Stock = Stock + ? WHERE TRIM(LOWER(Product_Name)) = TRIM(LOWER(?))";
+        String insertQuery = "INSERT INTO inventory (Product_Name, Price, Stock) VALUES (?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            // Step 1: Check if the product exists
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                checkStmt.setString(1, product.getProductName());
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    // Product exists, get current stock
+                    int currentStock = rs.getInt("Stock");
+
+                    // Step 2: Ask for additional quantity
+                    String additionalStockStr = JOptionPane.showInputDialog(
+                        "The product already exists with stock: " + currentStock + "\nEnter quantity to add:"
+                    );
+                    if (additionalStockStr == null) {
+                        return false; // User canceled
+                    }
+                    try {
+                        int additionalStock = Integer.parseInt(additionalStockStr);
+                        if (additionalStock < 0) {
+                            JOptionPane.showMessageDialog(null, "Quantity cannot be negative.");
+                            return false;
+                        }
+
+                        // Step 3: Update stock
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                            updateStmt.setInt(1, additionalStock);
+                            updateStmt.setString(2, product.getProductName());
+                            int rowsUpdated = updateStmt.executeUpdate();
+                            return rowsUpdated > 0;
+                        }
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.");
+                        return false;
+                }
+            }
         }
+        try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+            insertStmt.setString(1, product.getProductName());
+            insertStmt.setDouble(2, product.getPrice());
+            insertStmt.setInt(3, product.getStock());
+            int rowsInserted = insertStmt.executeUpdate();
+            return rowsInserted > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
     }
+}
 
     // Restock a product
     public boolean restockProduct(int productId, int quantity) {
