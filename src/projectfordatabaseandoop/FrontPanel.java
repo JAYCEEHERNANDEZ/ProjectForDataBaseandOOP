@@ -162,7 +162,7 @@ public class FrontPanel extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(223, 242, 235));
         jButton1.setFont(new java.awt.Font("Copperplate Gothic Light", 0, 18)); // NOI18N
-        jButton1.setText("Add Item");
+        jButton1.setText("Add to cart");
         jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
